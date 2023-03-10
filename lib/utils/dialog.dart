@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 enum UpdateFrom {
@@ -41,14 +43,18 @@ class DialogUtils {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const SizedBox(width: 40),
-                      const Text(
-                        'Update Category',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 23,
-                          fontFamily: 'sans-serif-condensed-medium',
-                        ),
-                      ),
+                       Text((){
+                       switch (updateFrom){
+                         case UpdateFrom.category : return "Update Category";
+                         case UpdateFrom.product : return "Update Product";
+                         case UpdateFrom.batch : return "Update Batch";
+                         default : return "Category";
+                       }
+                      }(), style: const TextStyle(
+                         color: Colors.black,
+                         fontSize: 23,
+                         fontFamily: 'sans-serif-condensed-medium',
+                       ),),
                       IconButton(
                         icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
@@ -100,7 +106,7 @@ class DialogUtils {
 
   static void showIncDialog(
     BuildContext context, {
-    required updateFrom,
+    // required updateFrom,
     required String txt,
     required Function(String?) onUpdateCall,
     // required Function() onDismiss,

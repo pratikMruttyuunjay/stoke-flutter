@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stoke/dio.dart';
-import 'package:stoke/dto/category_list_dto.dart';
+import 'package:stoke/dto/category/category_list_dto.dart';
 
-import '../../dto/category_add.dart';
-import '../../dto/category_update.dart';
+import '../../dto/category/category_add.dart';
+import '../../dto/category/category_update.dart';
 
 abstract class CategoryRepoAbstract {
 

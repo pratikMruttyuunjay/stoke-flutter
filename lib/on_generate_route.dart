@@ -8,13 +8,22 @@ import 'package:stoke/screens/loading_screen.dart';
 import 'package:stoke/screens/product/product_screen.dart';
 import 'package:stoke/screens/unknown_screen.dart';
 
+
+enum UpdateFrom {
+  category,
+  product,
+  batch
+  // Add more options as needed
+}
+
 class RoutesGenerator {
 
   static Route? onGenerate(RouteSettings settings) {
     final route = settings.name;
+    final args  = settings.arguments;
     switch (route) {
       case AppRoutes.add: {
-        return MaterialPageRoute(builder: (_)=> const AddScreen());
+        return MaterialPageRoute(builder: (_)=> AddScreen(argument: args.toString()));
       }
       case AppRoutes.category: {
         return MaterialPageRoute(builder: (_)=> const CategoryScreen());

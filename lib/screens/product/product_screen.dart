@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:stoke/screens/category/category_screen.dart';
-
-import '../../dto/category_list_dto.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stoke/screens/product/product_controller.dart';
 import '../../utils/dialog.dart';
 
-class ProductScreen extends StatelessWidget {
+class ProductScreen extends ConsumerWidget {
   const ProductScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+
+    const categoryList = ["fwefwef","fwefwef","ergergerg","ergerg"];
+    final productListProd = ref.watch(productListController);
+    final productUpdateProd = ref.watch(productUpdateController);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -17,33 +20,60 @@ class ProductScreen extends StatelessWidget {
         title: const Text("Product"),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(15))),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.white,
+            child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
-          // Flexible(
-          //   child: categoryList.map(
-          //       data: (data) {
-          //         return ListView.builder(
-          //           // clipBehavior: Clip.antiAlias,
-          //           padding: const EdgeInsets.only(top: 5, bottom: 70),
-          //           itemCount: data.value.length,
-          //           shrinkWrap: true,
-          //           itemBuilder: (BuildContext ctx, int index) {
-          //             return ProductItem(listData: data.value[index]);
-          //           },
-          //         );
-          //       },
-          //       error: (t) => Center(
-          //         child: Text(t.toString()),
-          //       ),
-          //       loading: (t) =>
-          //       const Center(child: CircularProgressIndicator())),
-          // ),
+          Flexible(
+            child:
+            ListView.builder(
+              // clipBehavior: Clip.antiAlias,
+              padding: const EdgeInsets.only(top: 5, bottom: 70),
+              itemCount: categoryList.length,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext ctx, int index) {
+                return ProductItem(listData: categoryList[index]);
+              },
+            )
+            // productListProd.map(
+            //     data: (data) {
+            //       return ListView.builder(
+            //         // clipBehavior: Clip.antiAlias,
+            //         padding: const EdgeInsets.only(top: 5, bottom: 70),
+            //         itemCount: data.value?.length,
+            //         shrinkWrap: true,
+            //         itemBuilder: (BuildContext ctx, int index) {
+            //           return ProductItem(listData: data.value[index]);
+            //         },
+            //       );
+            //     },
+            //     error: (t) => Center(
+            //       child: Text(t.toString()),
+            //     ),
+            //     loading: (t) =>
+            //     const Center(child: CircularProgressIndicator())),
+          ),
         ],
       ),
       floatingActionButton: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, "/add", arguments: 'Add Product');
+        },
         style: ElevatedButton.styleFrom(
             shape: const CircleBorder(), padding: const EdgeInsets.all(16)),
         child: const Icon(
@@ -57,7 +87,8 @@ class ProductScreen extends StatelessWidget {
 
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key, required this.listData}) : super(key: key);
-  final CategoryListData listData;
+  // final CategoryListData listData;
+  final String listData;
 
   @override
   Widget build(BuildContext context) {
@@ -66,15 +97,14 @@ class ProductItem extends StatelessWidget {
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, "/product");
+          Navigator.pushNamed(context, "/batch");
         },
         onLongPress: () {
-          // DialogUtils.showUpdateDialog(
-          //     context,
-          //     updateFrom: UpdateFrom.category,
-          //     txt: "",
-          //     // onDismiss: () {},
-          //     onUpdateCall: (title,dialog) {});
+          DialogUtils.showUpdateDialog(context,
+              updateFrom: UpdateFrom.product,
+              txt : listData,
+              // onDismiss: () {},
+              onUpdateCall: (title) {});
         },
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -89,7 +119,7 @@ class ProductItem extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
-              child: Text(listData.title,
+              child: Text(listData,
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     fontSize: 20,

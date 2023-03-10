@@ -1,39 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stoke/on_generate_route.dart';
+import 'package:stoke/screens/add/add_controller.dart';
 
-class AddScreen extends StatelessWidget {
-  const AddScreen({Key? key}) : super(key: key);
+
+class AddScreen extends ConsumerWidget {
+
+  const AddScreen({Key? key,required this.argument}) : super(key: key);
+
+  final String? argument;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
+
+    // final routes =
+    // ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+    print(argument);
+    final addCategoryProd = ref.watch(categoryAddController);
+    final addProductProd = ref.watch(productAddController);
+    final addBatchProd = ref.watch(batchAddController);
+
     return Scaffold(
-      // appBar: AppBar(
-      //   toolbarHeight: 56,
-      //   titleSpacing: 0,
-      //   backgroundColor: const Color(0xFF7540EE),
-      //   elevation: 0,
-      //   title: Row(
-      //     mainAxisAlignment: MainAxisAlignment.start,
-      //     children: [
-      //       IconButton(
-      //         icon: const Icon(
-      //           Icons.arrow_back,
-      //           color: Colors.black,
-      //         ),
-      //         onPressed: () {
-      //         },
-      //       ),
-      //       const SizedBox(width: 16),
-      //       const Text(
-      //         'Add',
-      //         style: TextStyle(
-      //           fontSize: 25,
-      //           color: Colors.white,
-      //           fontFamily: 'sans-serif-condensed-medium',
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      // ),
       appBar: AppBar(
           centerTitle: true,
           // automaticallyImplyLeading: false,
@@ -53,9 +40,9 @@ class AddScreen extends StatelessWidget {
               ),
             ),
           ),
-          title: const Text(
-            'Add',
-            style: TextStyle(
+          title: Text(
+            argument!,
+            style: const TextStyle(
               fontSize: 25,
               color: Colors.white,
               fontFamily: 'sans-serif-condensed-medium',
@@ -129,11 +116,10 @@ class AddScreen extends StatelessWidget {
                       start: 20, top: 50, end: 20),
                   child: ElevatedButton(
                     style: ButtonStyle(
-                        shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0)))),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)))),
                     onPressed: () {},
-                    child: const Text('Add Screen'),
+                    child: Text(argument!),
                   ),
                 ),
               )

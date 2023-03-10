@@ -3,20 +3,24 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stoke/dio.dart';
-import 'package:stoke/dto/category_list_dto.dart';
+import 'package:stoke/dto/add_qty.dart';
+import 'package:stoke/dto/batch/batch_add.dart';
+import 'package:stoke/dto/category/category_list_dto.dart';
+import 'package:stoke/dto/minus_qty.dart';
 
-import '../../dto/category_update.dart';
+import '../../dto/batch/batch_list.dart';
+import '../../dto/batch/batch_update.dart';
 
 abstract class BatchRepoAbstract {
   const BatchRepoAbstract();
 
-  Future<CategoryList?> getBatchList({required FormData credential});
+  Future<BatchList?> getBatchList({required FormData credential});
 
-  Future<CategoryList?> getBatchAddQty({required FormData credential});
+  Future<AddQty?> getBatchAddQty({required FormData credential});
 
-  Future<CategoryList?> getBatchMinusQty({required FormData credential});
+  Future<MinusQty?> getBatchMinusQty({required FormData credential});
 
-  Future<CategoryList?> getBatchUpdate({required FormData credential});
+  Future<BatchUpdate?> getBatchUpdate({required FormData credential});
 }
 
 final batchRepoProvider = Provider<BatchRepo>((ref) {
@@ -29,11 +33,11 @@ class BatchRepo extends BatchRepoAbstract {
   final API _dio;
 
   @override
-  Future<CategoryList?> getBatchAdd({required FormData credential}) async {
+  Future<BatchAdd?> getBatchAdd({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
-        final batchAdd = categoryListFromJson(response.data);
+        final batchAdd = batchAddFromJson(response.data);
         return batchAdd;
       } else {
         return null;
@@ -45,11 +49,11 @@ class BatchRepo extends BatchRepoAbstract {
   }
 
   @override
-  Future<CategoryList?> getBatchAddQty({required FormData credential}) async {
+  Future<AddQty?> getBatchAddQty({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
-        final batchAdd = categoryListFromJson(response.data);
+        final batchAdd = addQtyFromJson(response.data);
         return batchAdd;
       } else {
         return null;
@@ -61,11 +65,11 @@ class BatchRepo extends BatchRepoAbstract {
   }
 
   @override
-  Future<CategoryList?> getBatchList({required FormData credential}) async {
+  Future<BatchList?> getBatchList({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
-        final batchAdd = categoryListFromJson(response.data);
+        final batchAdd = batchListFromJson(response.data);
         return batchAdd;
       } else {
         return null;
@@ -77,11 +81,11 @@ class BatchRepo extends BatchRepoAbstract {
   }
 
   @override
-  Future<CategoryList?> getBatchMinusQty({required FormData credential}) async {
+  Future<MinusQty?> getBatchMinusQty({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
-        final batchAdd = categoryListFromJson(response.data);
+        final batchAdd = minusQtyFromJson(response.data);
         return batchAdd;
       } else {
         return null;
@@ -93,11 +97,11 @@ class BatchRepo extends BatchRepoAbstract {
   }
 
   @override
-  Future<CategoryList?> getBatchUpdate({required FormData credential}) async {
+  Future<BatchUpdate?> getBatchUpdate({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
-        final batchAdd = categoryListFromJson(response.data);
+        final batchAdd = batchUpdateFromJson(response.data);
         return batchAdd;
       } else {
         return null;

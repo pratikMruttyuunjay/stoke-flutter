@@ -1,54 +1,50 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stoke/dto/batch/batch_add.dart';
+import 'package:stoke/dto/product/product_add.dart';
 
-import '../../dto/category_add.dart';
-import '../../dto/category_list_dto.dart';
+import '../../dto/category/category_add.dart';
+import '../../dto/category/category_list_dto.dart';
 import '../batch/batch_repo.dart';
 import '../category/category_repo.dart';
 import 'add_repo.dart';
 
-final batchAdd = FutureProvider<List<CategoryListData>?>((ref) async {
+final batchAddController = FutureProvider<BatchAdd?>((ref) async {
   final repo = ref.watch(addRepoProvider);
 
-  final FormData loginData = FormData.fromMap({
+  final FormData addBatchCred = FormData.fromMap({
     'action': 'categoryList',
   });
 
-  List<CategoryListData>? categoryList = await repo.addBatch(credential: loginData);
+  BatchAdd? addBatch = await repo.addBatch(credential: addBatchCred);
 
-  return categoryList;
+  return addBatch;
 });
 
-final categoryAddController = FutureProvider<CategoryList?>((ref) async {
+final categoryAddController = FutureProvider<CategoryAdd?>((ref) async {
 
   final repo = ref.read(addRepoProvider);
 
-  final FormData loginData = FormData.fromMap({
+  final FormData categoryAddCred = FormData.fromMap({
     'action': 'categoryList',
   });
 
-  CategoryList? categoryList = await repo.addCategory(credential: loginData);
+  CategoryAdd? categoryAdd = await repo.addCategory(credential: categoryAddCred);
 
-  if(categoryList != null){
-    return categoryList;
-  }
-  return null;
+  return categoryAdd;
 
 });
 
-final batchAddController = FutureProvider<CategoryList?>((ref) async {
+final productAddController = FutureProvider<ProductAdd?>((ref) async {
 
   final repo = ref.read(addRepoProvider);
 
-  final FormData loginData = FormData.fromMap({
+  final FormData productAddCred = FormData.fromMap({
     'action': 'categoryList',
   });
 
-  CategoryList? categoryList = await repo.addCategory(credential: loginData);
+  ProductAdd? productAdd = await repo.addProduct(credential: productAddCred);
 
-  if(categoryList != null){
-    return categoryList;
-  }
-  return null;
+  return productAdd;
 
 });

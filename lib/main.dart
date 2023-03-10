@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.purple,
         ),
-        initialRoute: AppRoutes.batch,
+        initialRoute: AppRoutes.category,
         onGenerateRoute: RoutesGenerator.onGenerate,
         onUnknownRoute: (_) => RoutesGenerator.errorRoute());
   }

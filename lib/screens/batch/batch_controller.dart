@@ -1,53 +1,57 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stoke/dio.dart';
-import 'package:stoke/dto/category_list_dto.dart';
+import 'package:stoke/dto/add_qty.dart';
+import 'package:stoke/dto/batch/batch_list.dart';
+import 'package:stoke/dto/batch/batch_update.dart';
+import 'package:stoke/dto/category/category_list_dto.dart';
+import 'package:stoke/dto/minus_qty.dart';
 import 'package:stoke/screens/batch/batch_repo.dart';
 
-final batchList = FutureProvider<List<CategoryListData>?>((ref) async {
+final batchListController = FutureProvider<List<BatchListData>?>((ref) async {
   final repo = ref.watch(batchRepoProvider);
 
-  final FormData loginData = FormData.fromMap({
+  final FormData batchListCred = FormData.fromMap({
     'action': 'categoryList',
   });
 
-  CategoryList? categoryList = await repo.getBatchList(credential: loginData);
+  BatchList? batchList = await repo.getBatchList(credential: batchListCred);
 
-  return categoryList?.data;
+  return batchList?.data;
 });
 
-final batchAddQty = FutureProvider<List<CategoryListData>?>((ref) async {
+final batchAddQtyController = FutureProvider<AddQtyData?>((ref) async {
   final repo = ref.watch(batchRepoProvider);
 
-  final FormData loginData = FormData.fromMap({
+  final FormData addQtyCred = FormData.fromMap({
     'action': 'categoryList',
   });
 
-  CategoryList? categoryList = await repo.getBatchAddQty(credential: loginData);
+  AddQty? batchAddQty = await repo.getBatchAddQty(credential: addQtyCred);
 
-  return categoryList?.data;
+  return batchAddQty?.data;
 });
 
-final batchMinusQty = FutureProvider<List<CategoryListData>?>((ref) async {
+final batchMinusQtyController = FutureProvider<MinusQtyData?>((ref) async {
   final repo = ref.watch(batchRepoProvider);
 
-  final FormData loginData = FormData.fromMap({
+  final FormData minusQtyCred = FormData.fromMap({
     'action': 'categoryList',
   });
 
-  CategoryList? categoryList = await repo.getBatchMinusQty(credential: loginData);
+  MinusQty? batchMinusQty = await repo.getBatchMinusQty(credential: minusQtyCred);
 
-  return categoryList?.data;
+  return batchMinusQty?.data;
 });
 
-final batchUpdate = FutureProvider<List<CategoryListData>?>((ref) async {
+final batchUpdateController = FutureProvider<BatchUpdateData?>((ref) async {
   final repo = ref.watch(batchRepoProvider);
 
-  final FormData loginData = FormData.fromMap({
+  final FormData batchUpdateCred = FormData.fromMap({
     'action': 'categoryList',
   });
 
-  CategoryList? categoryList = await repo.getBatchUpdate(credential: loginData);
+  BatchUpdate? batchUpdate = await repo.getBatchUpdate(credential: batchUpdateCred);
 
-  return categoryList?.data;
+  return batchUpdate?.data;
 });
