@@ -8,17 +8,23 @@ import 'package:stoke/screens/product/product_repo.dart';
 
 import '../../dto/category/category_list_dto.dart';
 
-final productListController = FutureProvider<List<ProductListData>?>((ref) async {
+final productListController = FutureProvider.family<List<ProductListData>?,String>((ref,categoryId) async {
 
   final repo = ref.read(productProvider);
 
   final FormData productListCred = FormData.fromMap({
-    'action': 'categoryList',
+    "action":"productList",
+    "status":"1",
+    "category_id":categoryId,
   });
 
   List<ProductListData>? productList = await repo.getProductList(credential: productListCred);
-  return productList;
-
+  if(productList.isNotEmpty){
+    return productList;
+  }else {
+    [];
+  }
+  return [];
 });
 
 final productUpdateController = FutureProvider<ProductUpdate?>((ref) async {

@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +13,8 @@ class CategoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final categoryList = ["efewfef", 'efefe'];
-    // final categoryList = ref.watch(categoryListController);
+    // final categoryList = ["efewfef", 'efefe'];
+    final categoryList = ref.watch(categoryListController);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -28,33 +29,36 @@ class CategoryScreen extends ConsumerWidget {
         children: [
           // const Toolbar(),
           Flexible(
-              child: ListView.builder(
-            // clipBehavior: Clip.antiAlias,
-            padding: const EdgeInsets.only(top: 5, bottom: 70),
-            itemCount: categoryList.length,
-            shrinkWrap: true,
-            itemBuilder: (BuildContext ctx, int index) {
-              return CategoryItem(listData: categoryList[index]);
-            },
-          )
-              // categoryList.map(
-              //     data: (data) {
-              //       return ListView.builder(
-              //         // clipBehavior: Clip.antiAlias,
-              //         padding: const EdgeInsets.only(top: 5, bottom: 70),
-              //         itemCount: data.value.length,
-              //         shrinkWrap: true,
-              //         itemBuilder: (BuildContext ctx, int index) {
-              //           return CategoryItem(listData: data.value[index]);
-              //         },
-              //       );
-              //     },
-              //     error: (t) => Center(
-              //           child: Text(t.toString()),
-              //         ),
-              //     loading: (t) =>
-              //         const Center(child: CircularProgressIndicator())),
-              ),
+            //     child: ListView.builder(
+            //   // clipBehavior: Clip.antiAlias,
+            //   padding: const EdgeInsets.only(top: 5, bottom: 70),
+            //   itemCount: categoryList.length,
+            //   shrinkWrap: true,
+            //   itemBuilder: (BuildContext ctx, int index) {
+            //     return CategoryItem(listData: categoryList[index]);
+            //   },
+            // )
+            child: categoryList.map(
+                data: (data) {
+                  return ListView.builder(
+                    // clipBehavior: Clip.antiAlias,
+                    padding: const EdgeInsets.only(top: 5, bottom: 70),
+                    itemCount: data.value.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext ctx, int index) {
+                      return CategoryItem(
+                        listData: data.value[index],
+                        ref: ref,
+                      );
+                    },
+                  );
+                },
+                error: (t) => Center(
+                      child: Text(t.toString()),
+                    ),
+                loading: (t) =>
+                    const Center(child: CircularProgressIndicator())),
+          ),
         ],
       ),
       floatingActionButton: ElevatedButton(
@@ -83,10 +87,13 @@ class CategoryScreen extends ConsumerWidget {
 }
 
 class CategoryItem extends StatelessWidget {
-  const CategoryItem({Key? key, required this.listData}) : super(key: key);
-  final String listData;
+  const CategoryItem({Key? key, required this.listData, required this.ref})
+      : super(key: key);
 
-  // final CategoryListData listData;
+  // final String listData;
+
+  final CategoryListData listData;
+  final WidgetRef ref;
 
   @override
   Widget build(BuildContext context) {
@@ -95,14 +102,29 @@ class CategoryItem extends StatelessWidget {
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, "/product");
+          Navigator.pushNamed(context, "/product", arguments: listData);
         },
         onLongPress: () {
           DialogUtils.showUpdateDialog(context,
-              updateFrom: UpdateFrom.category,
-              txt: listData,
+              updateFrom: UpdateFrom.category, txt: listData.title,
               // onDismiss: () {},
-              onUpdateCall: (title) {});
+              onUpdateCall: (title) {
+            print("onUpdateCall");
+            ref.read(categoryUpdateController(
+                    CategoryUpdateArg(categoryId: listData.id, title: title!)))
+                .map(
+                    data: (data) => {
+                      if(data.hasValue){
+                        debugPrint(data.value?.data.toString())
+                      }
+                    },
+                    error: (error) => {
+                      debugPrint(error.stackTrace.toString())
+                    },
+                    loading: (loading) => {
+
+                    });
+          });
         },
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -117,7 +139,7 @@ class CategoryItem extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
-              child: Text(listData,
+              child: Text(listData.title,
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     fontSize: 20,

@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stoke/dto/product/product_list.dart';
+import 'package:stoke/screens/category/category_screen.dart';
 import 'package:stoke/screens/product/product_controller.dart';
+import '../../dto/category/category_list_dto.dart';
 import '../../utils/dialog.dart';
 
 class ProductScreen extends ConsumerWidget {
-  const ProductScreen({Key? key}) : super(key: key);
+  const ProductScreen({Key? key,required this.categoryListData}) : super(key: key);
+
+  final CategoryListData categoryListData;
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
 
+    print(categoryListData.title);
     const categoryList = ["fwefwef","fwefwef","ergergerg","ergerg"];
-    final productListProd = ref.watch(productListController);
+    final productListProd = ref.watch(productListController(categoryListData.id));
     final productUpdateProd = ref.watch(productUpdateController);
     return Scaffold(
       appBar: AppBar(
@@ -41,32 +47,36 @@ class ProductScreen extends ConsumerWidget {
         children: [
           Flexible(
             child:
-            ListView.builder(
-              // clipBehavior: Clip.antiAlias,
-              padding: const EdgeInsets.only(top: 5, bottom: 70),
-              itemCount: categoryList.length,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext ctx, int index) {
-                return ProductItem(listData: categoryList[index]);
-              },
-            )
-            // productListProd.map(
-            //     data: (data) {
-            //       return ListView.builder(
-            //         // clipBehavior: Clip.antiAlias,
-            //         padding: const EdgeInsets.only(top: 5, bottom: 70),
-            //         itemCount: data.value?.length,
-            //         shrinkWrap: true,
-            //         itemBuilder: (BuildContext ctx, int index) {
-            //           return ProductItem(listData: data.value[index]);
-            //         },
-            //       );
-            //     },
-            //     error: (t) => Center(
-            //       child: Text(t.toString()),
-            //     ),
-            //     loading: (t) =>
-            //     const Center(child: CircularProgressIndicator())),
+            // ListView.builder(
+            //   // clipBehavior: Clip.antiAlias,
+            //   padding: const EdgeInsets.only(top: 5, bottom: 70),
+            //   itemCount: categoryList.length,
+            //   shrinkWrap: true,
+            //   itemBuilder: (BuildContext ctx, int index) {
+            //     return ProductItem(listData: categoryList[index]);
+            //   },
+            // )
+            productListProd.map(
+                data: (data) {
+                  if(data.value!.isNotEmpty){
+                    return ListView.builder(
+                      // clipBehavior: Clip.antiAlias,
+                      padding: const EdgeInsets.only(top: 5, bottom: 70),
+                      itemCount: data.value?.length,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext ctx, int index) {
+                        return ProductItem(listData: data.value![index]);
+                      },
+                    );
+                  }else {
+                   return const Center(child: Text("Products not found"));
+                  }
+                },
+                error: (t) => Center(
+                  child: Text(t.toString()),
+                ),
+                loading: (t) =>
+                const Center(child: CircularProgressIndicator())),
           ),
         ],
       ),
@@ -87,8 +97,8 @@ class ProductScreen extends ConsumerWidget {
 
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key, required this.listData}) : super(key: key);
-  // final CategoryListData listData;
-  final String listData;
+  final ProductListData listData;
+  // final String listData;
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +107,12 @@ class ProductItem extends StatelessWidget {
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(context, "/batch");
+          Navigator.pushNamed(context, "/batch",arguments: listData);
         },
         onLongPress: () {
           DialogUtils.showUpdateDialog(context,
               updateFrom: UpdateFrom.product,
-              txt : listData,
+              txt : listData.title,
               // onDismiss: () {},
               onUpdateCall: (title) {});
         },
@@ -119,7 +129,7 @@ class ProductItem extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
-              child: Text(listData,
+              child: Text(listData.title,
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     fontSize: 20,

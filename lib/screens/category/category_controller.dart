@@ -18,16 +18,27 @@ final categoryListController = FutureProvider<List<CategoryListData>>((ref) asyn
 
 });
 
-final categoryUpdateController = FutureProvider<CategoryUpdate?>((ref) async {
+final categoryUpdateController = FutureProvider.family.autoDispose<CategoryUpdate?,CategoryUpdateArg>((ref,arg) async {
 
   final repo = ref.read(categoryProvider);
 
   final FormData categoryUpdateCred = FormData.fromMap({
     'action': 'categoryList',
+    'title':arg.title,
+    'category_id':arg.categoryId
   });
 
   CategoryUpdate? categoryUpdate = await repo.updateCategory(credential: categoryUpdateCred);
   return categoryUpdate;
 
 });
+
+class CategoryUpdateArg {
+  final String categoryId;
+  final String title;
+  CategoryUpdateArg({
+    required this.categoryId,
+    required this.title,
+  });
+}
 

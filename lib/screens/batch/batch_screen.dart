@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stoke/dto/batch/batch_list.dart';
 import 'package:stoke/screens/batch/batch_controller.dart';
 
 import '../../dto/category/category_list_dto.dart';
+import '../../dto/product/product_list.dart';
 import '../../utils/dialog.dart';
 
 class BatchScreen extends ConsumerWidget {
-  const BatchScreen({Key? key}) : super(key: key);
+  const BatchScreen({Key? key,required this.listData}) : super(key: key);
+
+  final ProductListData listData;
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
     final list = ["ffewf", "efefef","wefwefwefw","fwefwefw"];
-    final batchListProd = ref.watch(batchListController);
+    final batchListProd = ref.watch(batchListController(listData.id));
     final batchUpdateProd = ref.watch(batchUpdateController);
 
     return Scaffold(
@@ -42,15 +46,38 @@ class BatchScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           Flexible(
-            child: ListView.builder(
-              // clipBehavior: Clip.antiAlias,
-              padding: const EdgeInsets.only(top: 5, bottom: 70),
-              itemCount: list.length,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext ctx, int index) {
-                return BatchCard(listData: list[index]);
-              },
-            ),
+            child:
+            // ListView.builder(
+            //   // clipBehavior: Clip.antiAlias,
+            //   padding: const EdgeInsets.only(top: 5, bottom: 70),
+            //   itemCount: list.length,
+            //   shrinkWrap: true,
+            //   itemBuilder: (BuildContext ctx, int index) {
+            //     return BatchCard(listData: list[index]);
+            //   },
+            // ),
+            batchListProd.map(
+                data: (data) {
+                  // if(data.value!.isNotEmpty){
+                    return ListView.builder(
+                      // clipBehavior: Clip.antiAlias,
+                      padding: const EdgeInsets.only(top: 5, bottom: 70),
+                      itemCount: data.value?.length,
+                      shrinkWrap: true,
+                      itemBuilder: (BuildContext ctx, int index) {
+                        return BatchItem(listData: data.value![index]);
+                      },
+                    );
+                  // }else {
+                  //   return const Center(child: Text("Products not found"));
+                  // }
+                },
+                error: (t) => Center(
+                  child: Text(t.toString()),
+                ),
+                loading: (t) =>
+                const Center(child: CircularProgressIndicator())
+            )
           ),
         ],
       ),
@@ -72,7 +99,7 @@ class BatchScreen extends ConsumerWidget {
 
 class BatchItem extends StatelessWidget {
   const BatchItem({Key? key, required this.listData}) : super(key: key);
-  final CategoryListData listData;
+  final BatchListData listData;
 
   @override
   Widget build(BuildContext context) {

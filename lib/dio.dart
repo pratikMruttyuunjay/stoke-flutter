@@ -11,8 +11,8 @@ class API {
   Dio get getResponse => _dio;
 
   API() {
-    _dio.options.baseUrl = 'https://stokemobile.hardikgiridevelopment.com';
-    // _dio.options.baseUrl = 'https://stoke.mruttyuunjay.com/';
+    // _dio.options.baseUrl = 'https://stokemobile.hardikgiridevelopment.com';
+    _dio.options.baseUrl = 'https://stoke.mruttyuunjay.com/';
     _dio.interceptors.add(PrettyDioLogger());
   }
 }

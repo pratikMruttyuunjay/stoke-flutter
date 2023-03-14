@@ -28,18 +28,18 @@ class ProductRepository extends ProductRepoAbstract{
   final API _dio;
 
   @override
-  Future<List<ProductListData>?> getProductList({required FormData credential}) async {
+  Future<List<ProductListData>> getProductList({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = productListFromJson(response.data);
         return batchAdd.data;
       } else {
-        return null;
+        return [];
       }
     } catch (e) {
       log(e.toString());
-      return null;
+      return [];
     }
   }
 

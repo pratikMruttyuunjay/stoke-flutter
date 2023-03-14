@@ -14,7 +14,7 @@ import '../../dto/batch/batch_update.dart';
 abstract class BatchRepoAbstract {
   const BatchRepoAbstract();
 
-  Future<BatchList?> getBatchList({required FormData credential});
+  Future<List<BatchListData>?> getBatchList({required FormData credential});
 
   Future<AddQty?> getBatchAddQty({required FormData credential});
 
@@ -65,12 +65,12 @@ class BatchRepo extends BatchRepoAbstract {
   }
 
   @override
-  Future<BatchList?> getBatchList({required FormData credential}) async {
+  Future<List<BatchListData>?> getBatchList({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = batchListFromJson(response.data);
-        return batchAdd;
+        return batchAdd.data;
       } else {
         return null;
       }

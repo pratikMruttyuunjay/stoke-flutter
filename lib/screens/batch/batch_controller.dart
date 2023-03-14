@@ -8,16 +8,17 @@ import 'package:stoke/dto/category/category_list_dto.dart';
 import 'package:stoke/dto/minus_qty.dart';
 import 'package:stoke/screens/batch/batch_repo.dart';
 
-final batchListController = FutureProvider<List<BatchListData>?>((ref) async {
+final batchListController = FutureProvider.family<List<BatchListData>?,String>((ref,productId) async {
   final repo = ref.watch(batchRepoProvider);
 
   final FormData batchListCred = FormData.fromMap({
-    'action': 'categoryList',
+    "action":"batchList",
+    "product_id":productId
   });
 
-  BatchList? batchList = await repo.getBatchList(credential: batchListCred);
-
-  return batchList?.data;
+  List<BatchListData>? batchList = await repo.getBatchList(credential: batchListCred);
+  print(batchList?.iterator.toString());
+  return batchList;
 });
 
 final batchAddQtyController = FutureProvider<AddQtyData?>((ref) async {
