@@ -18,7 +18,7 @@ class DialogUtils {
     BuildContext context, {
     required updateFrom,
     required String txt,
-    required Function(String?) onUpdateCall,
+    required Function(String) onUpdateCall,
     // required Function() onDismiss,
   }) {
     late final TextEditingController textController1 = TextEditingController()
@@ -89,7 +89,13 @@ class DialogUtils {
                     margin: const EdgeInsets.symmetric(horizontal: 40),
                     child: ElevatedButton(
                       onPressed: () =>
-                          {onUpdateCall(textController1.text.toString())},
+                          {
+                            if(textController1.text.isEmpty){
+
+                            }else {
+                              onUpdateCall(textController1.text.toString())
+                            }
+                          },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.blue,
                         minimumSize: const Size(double.infinity, 50),

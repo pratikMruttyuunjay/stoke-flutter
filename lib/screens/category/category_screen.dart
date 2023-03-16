@@ -8,13 +8,12 @@ import 'package:stoke/screens/category/category_controller.dart';
 import 'package:stoke/dto/category/category_list_dto.dart';
 import 'package:stoke/utils/dialog.dart';
 
-class CategoryScreen extends ConsumerWidget {
+class CategoryScreen extends StatelessWidget {
   const CategoryScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context,) {
     // final categoryList = ["efewfef", 'efefe'];
-    final categoryList = ref.watch(categoryListController);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -28,36 +27,57 @@ class CategoryScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.max,
         children: [
           // const Toolbar(),
-          Flexible(
-            //     child: ListView.builder(
-            //   // clipBehavior: Clip.antiAlias,
-            //   padding: const EdgeInsets.only(top: 5, bottom: 70),
-            //   itemCount: categoryList.length,
-            //   shrinkWrap: true,
-            //   itemBuilder: (BuildContext ctx, int index) {
-            //     return CategoryItem(listData: categoryList[index]);
-            //   },
-            // )
-            child: categoryList.map(
-                data: (data) {
-                  return ListView.builder(
-                    // clipBehavior: Clip.antiAlias,
-                    padding: const EdgeInsets.only(top: 5, bottom: 70),
-                    itemCount: data.value.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext ctx, int index) {
-                      return CategoryItem(
-                        listData: data.value[index],
-                        ref: ref,
+          Consumer(builder: (context, ref, child) {
+
+            final CategoryUpdateState categoryUpdate = ref.watch(categoryUpdateStateProvider);
+
+            if(categoryUpdate is CategoryUpdateLoaded){
+              // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(categoryUpdate.updateData.message)));
+              return Container();
+            }else if(categoryUpdate is CategoryUpdateError){
+              return Center(child: Text(categoryUpdate.errorData.message));
+            }
+            return Center(
+              child: Container(),
+            );
+          },),
+          Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) {
+              final categoryList = ref.watch(categoryListController);
+              return Flexible(
+                //     child: ListView.builder(
+                //   // clipBehavior: Clip.antiAlias,
+                //   padding: const EdgeInsets.only(top: 5, bottom: 70),
+                //   itemCount: categoryList.length,
+                //   shrinkWrap: true,
+                //   itemBuilder: (BuildContext ctx, int index) {
+                //     return CategoryItem(listData: categoryList[index]);
+                //   },
+                // )
+                child: categoryList.map(
+                    data: (data) {
+                      return RefreshIndicator(
+                        onRefresh: () async => await ref.refresh(categoryListController.future),
+                        child: ListView.builder(
+                          // clipBehavior: Clip.antiAlias,
+                          padding: const EdgeInsets.only(top: 5, bottom: 70),
+                          itemCount: data.value.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext ctx, int index) {
+                            return CategoryItem(
+                                listData: data.value[index]
+                            );
+                          },
+                        ),
                       );
                     },
-                  );
-                },
-                error: (t) => Center(
+                    error: (t) => Center(
                       child: Text(t.toString()),
                     ),
-                loading: (t) =>
+                    loading: (t) =>
                     const Center(child: CircularProgressIndicator())),
+              );
+            },
           ),
         ],
       ),
@@ -86,17 +106,17 @@ class CategoryScreen extends ConsumerWidget {
   }
 }
 
-class CategoryItem extends StatelessWidget {
-  const CategoryItem({Key? key, required this.listData, required this.ref})
+class CategoryItem extends ConsumerWidget {
+  const CategoryItem({Key? key, required this.listData})
       : super(key: key);
 
   // final String listData;
 
   final CategoryListData listData;
-  final WidgetRef ref;
+  // final WidgetRef ref;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -104,26 +124,15 @@ class CategoryItem extends StatelessWidget {
         onTap: () {
           Navigator.pushNamed(context, "/product", arguments: listData);
         },
-        onLongPress: () {
+        onLongPress: ()  {
           DialogUtils.showUpdateDialog(context,
               updateFrom: UpdateFrom.category, txt: listData.title,
               // onDismiss: () {},
-              onUpdateCall: (title) {
+              onUpdateCall: (title)  {
             print("onUpdateCall");
-            ref.read(categoryUpdateController(
-                    CategoryUpdateArg(categoryId: listData.id, title: title!)))
-                .map(
-                    data: (data) => {
-                      if(data.hasValue){
-                        debugPrint(data.value?.data.toString())
-                      }
-                    },
-                    error: (error) => {
-                      debugPrint(error.stackTrace.toString())
-                    },
-                    loading: (loading) => {
-
-                    });
+            ref.read(categoryUpdateStateProvider.notifier).update(ref: ref, title: title,categoryId: listData.id);
+            ref.refresh(categoryListController.future);
+            Navigator.pop(context);
           });
         },
         child: Row(

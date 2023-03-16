@@ -8,7 +8,7 @@ import 'package:stoke/dto/category/category_list_dto.dart';
 import 'package:stoke/dto/minus_qty.dart';
 import 'package:stoke/screens/batch/batch_repo.dart';
 
-final batchListController = FutureProvider.family<List<BatchListData>?,String>((ref,productId) async {
+final batchListController = FutureProvider.autoDispose.family<List<BatchListData>?,String>((ref,productId) async {
   final repo = ref.watch(batchRepoProvider);
 
   final FormData batchListCred = FormData.fromMap({

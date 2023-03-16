@@ -12,13 +12,13 @@ class AddScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
+    final TextEditingController controller1 = TextEditingController();
 
     // final routes =
     // ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
     print(argument);
-    final addCategoryProd = ref.watch(categoryAddController);
-    final addProductProd = ref.watch(productAddController);
-    final addBatchProd = ref.watch(batchAddController);
+    // final addProductProd = ref.watch(productAddController);
+    // final addBatchProd = ref.watch(batchAddController);
 
     return Scaffold(
       appBar: AppBar(
@@ -55,6 +55,7 @@ class AddScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
+                controller: controller1,
                 decoration: InputDecoration(
                   hintText: 'Title',
                   prefixIcon: const Icon(Icons.drive_file_rename_outline),
@@ -118,7 +119,9 @@ class AddScreen extends ConsumerWidget {
                     style: ButtonStyle(
                         shape: MaterialStateProperty.all(RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)))),
-                    onPressed: () {},
+                    onPressed: () {
+                      ref.watch(addStateNotifierProvider.notifier).addCategory(ref: ref,title: controller1.text);
+                    },
                     child: Text(argument!),
                   ),
                 ),

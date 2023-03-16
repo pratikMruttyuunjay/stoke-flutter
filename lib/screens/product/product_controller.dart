@@ -8,7 +8,7 @@ import 'package:stoke/screens/product/product_repo.dart';
 
 import '../../dto/category/category_list_dto.dart';
 
-final productListController = FutureProvider.family<List<ProductListData>?,String>((ref,categoryId) async {
+final productListController = FutureProvider.autoDispose.family<List<ProductListData>?,String>((ref,categoryId) async {
 
   final repo = ref.read(productProvider);
 
