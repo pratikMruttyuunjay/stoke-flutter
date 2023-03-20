@@ -31,31 +31,32 @@ class ProductRepository extends ProductRepoAbstract{
   Future<List<ProductListData>> getProductList({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
+      print('ProductList: ${response.data}');
       if (response.statusCode == 200) {
         final batchAdd = productListFromJson(response.data);
         return batchAdd.data;
       } else {
-        return [];
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log(e.toString());
-      return [];
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 
   @override
-  Future<ProductUpdate?> getProductUpdate({required FormData credential}) async {
+  Future<ProductUpdate> getProductUpdate({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = productUpdateFromJson(response.data);
         return batchAdd;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 

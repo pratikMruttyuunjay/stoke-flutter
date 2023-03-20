@@ -6,6 +6,7 @@ import 'package:stoke/screens/batch/batch_controller.dart';
 import '../../dto/category/category_list_dto.dart';
 import '../../dto/product/product_list.dart';
 import '../../utils/dialog.dart';
+import '../add/add_screen.dart';
 
 class BatchScreen extends ConsumerWidget {
   const BatchScreen({Key? key,required this.listData}) : super(key: key);
@@ -14,9 +15,7 @@ class BatchScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context,WidgetRef ref) {
-    final list = ["ffewf", "efefef","wefwefwefw","fwefwefw"];
     final batchListProd = ref.watch(batchListController(listData.id));
-    final batchUpdateProd = ref.watch(batchUpdateController);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,32 +44,38 @@ class BatchScreen extends ConsumerWidget {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
+          Consumer(builder: (context, ref, child) {
+            final BatchUpdateState addState = ref.watch(batchUpdateStateProvider);
+            print("Update Consumer Called");
+            if(addState is BatchUpdateLoaded){
+              print("Update Loaded State = ${addState.updateData.toString()}");
+              ref.refresh(batchListController(listData.id));
+              Navigator.pop(context);
+            }else if(addState is BatchUpdateError){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(addState.errorData.message)));
+              print("Update Error State = ${addState.errorData.toString()}");
+            }
+            return Container();
+          },),
           Flexible(
-            child:
-            // ListView.builder(
-            //   // clipBehavior: Clip.antiAlias,
-            //   padding: const EdgeInsets.only(top: 5, bottom: 70),
-            //   itemCount: list.length,
-            //   shrinkWrap: true,
-            //   itemBuilder: (BuildContext ctx, int index) {
-            //     return BatchCard(listData: list[index]);
-            //   },
-            // ),
-            batchListProd.map(
+            child: batchListProd.map(
                 data: (data) {
-                  // if(data.value!.isNotEmpty){
-                    return ListView.builder(
-                      // clipBehavior: Clip.antiAlias,
-                      padding: const EdgeInsets.only(top: 5, bottom: 70),
-                      itemCount: data.value?.length,
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext ctx, int index) {
-                        return BatchItem(listData: data.value![index]);
-                      },
+                  if(data.value.isNotEmpty){
+                    return RefreshIndicator(
+                      onRefresh: () async => await ref.refresh(batchListController(listData.id)),
+                      child: ListView.builder(
+                          // clipBehavior: Clip.antiAlias,
+                          padding: const EdgeInsets.only(top: 5, bottom: 70),
+                          itemCount: data.value.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext ctx, int index) {
+                            return BatchCard(listData: data.value[index]);
+                          },
+                        ),
                     );
-                  // }else {
-                  //   return const Center(child: Text("Products not found"));
-                  // }
+                  }else {
+                    return const Center(child: Text("Products not found"));
+                  }
                 },
                 error: (t) => Center(
                   child: Text(t.toString()),
@@ -83,7 +88,7 @@ class BatchScreen extends ConsumerWidget {
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, "/add",arguments: 'Add Batch');
+          Navigator.pushNamed(context, "/add",arguments: AddScreenArg(from: AddScreenFrom.batch,productId: listData.id));
         },
         style: ElevatedButton.styleFrom(
             shape: const CircleBorder(), padding: const EdgeInsets.all(16)),
@@ -97,12 +102,12 @@ class BatchScreen extends ConsumerWidget {
   }
 }
 
-class BatchItem extends StatelessWidget {
+class BatchItem extends ConsumerWidget {
   const BatchItem({Key? key, required this.listData}) : super(key: key);
   final BatchListData listData;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -116,7 +121,14 @@ class BatchItem extends StatelessWidget {
               updateFrom: UpdateFrom.batch,
               txt: "",
               // onDismiss: () {},
-              onUpdateCall: (title) {});
+              onUpdateCall: (title) {
+                print("onUpdateCall");
+                // final productUpdateProd = ref.watch(productUpdateController);
+
+                // ref.read(batchUpdateStateProvider.notifier).update(ref: ref, title: title,batchId: listData.id);
+                // ref.refresh(productListController.future);
+                // Navigator.pop(context);
+              });
         },
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -149,12 +161,12 @@ class BatchItem extends StatelessWidget {
   }
 }
 
-class BatchCard extends StatelessWidget {
+class BatchCard extends ConsumerWidget {
   const BatchCard({Key? key, required this.listData}) : super(key: key);
-  final String listData;
+  final BatchListData listData;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -164,9 +176,11 @@ class BatchCard extends StatelessWidget {
           DialogUtils.showUpdateDialog(
               context,
               updateFrom: UpdateFrom.batch,
-              txt: listData,
+              txt: listData.title,
               // onDismiss: () {},
-              onUpdateCall: (title) {});
+              onUpdateCall: (title) {
+                ref.read(batchUpdateStateProvider.notifier).update(ref: ref, title: title,batchId: listData.id);
+              });
         },
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -184,7 +198,7 @@ class BatchCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(15, 0, 0, 0),
                 child: Text(
-                  listData,
+                  listData.title,
                   style: const TextStyle(
                     fontFamily: 'Poppins',
                     color: Colors.black,

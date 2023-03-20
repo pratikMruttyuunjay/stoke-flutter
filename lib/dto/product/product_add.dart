@@ -4,6 +4,12 @@
 
 import 'dart:convert';
 
+// To parse this JSON data, do
+//
+//     final productAdd = productAddFromJson(jsonString);
+
+import 'dart:convert';
+
 ProductAdd productAddFromJson(String str) => ProductAdd.fromJson(json.decode(str));
 
 String productAddToJson(ProductAdd data) => json.encode(data.toJson());

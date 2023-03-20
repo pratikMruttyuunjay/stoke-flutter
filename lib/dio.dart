@@ -12,7 +12,7 @@ class API {
 
   API() {
     // _dio.options.baseUrl = 'https://stokemobile.hardikgiridevelopment.com';
-    _dio.options.baseUrl = 'https://stoke.mruttyuunjay.com/';
+    _dio.options.baseUrl = 'https://demostoke.mruttyuunjay.com/';
     _dio.interceptors.add(PrettyDioLogger());
   }
 }

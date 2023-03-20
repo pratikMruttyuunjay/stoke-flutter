@@ -4,15 +4,16 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stoke/screens/add/add_screen.dart';
 import 'package:stoke/screens/category/category_controller.dart';
 import 'package:stoke/dto/category/category_list_dto.dart';
 import 'package:stoke/utils/dialog.dart';
 
-class CategoryScreen extends StatelessWidget {
+class CategoryScreen extends ConsumerWidget {
   const CategoryScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context,) {
+  Widget build(BuildContext context,WidgetRef ref) {
     // final categoryList = ["efewfef", 'efefe'];
     return Scaffold(
       appBar: AppBar(
@@ -28,18 +29,14 @@ class CategoryScreen extends StatelessWidget {
         children: [
           // const Toolbar(),
           Consumer(builder: (context, ref, child) {
-
             final CategoryUpdateState categoryUpdate = ref.watch(categoryUpdateStateProvider);
+            if(categoryUpdate is CategoryUpdateLoaded) {
 
-            if(categoryUpdate is CategoryUpdateLoaded){
-              // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(categoryUpdate.updateData.message)));
-              return Container();
+              Navigator.pop(context);
             }else if(categoryUpdate is CategoryUpdateError){
               return Center(child: Text(categoryUpdate.errorData.message));
             }
-            return Center(
-              child: Container(),
-            );
+            return Container();
           },),
           Consumer(
             builder: (BuildContext context, WidgetRef ref, Widget? child) {
@@ -57,7 +54,7 @@ class CategoryScreen extends StatelessWidget {
                 child: categoryList.map(
                     data: (data) {
                       return RefreshIndicator(
-                        onRefresh: () async => await ref.refresh(categoryListController.future),
+                        onRefresh: () async => await ref.refresh(categoryListController),
                         child: ListView.builder(
                           // clipBehavior: Clip.antiAlias,
                           padding: const EdgeInsets.only(top: 5, bottom: 70),
@@ -83,7 +80,7 @@ class CategoryScreen extends StatelessWidget {
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, "/add", arguments: 'Add Category');
+          Navigator.pushNamed(context, "/add", arguments: AddScreenArg(from: AddScreenFrom.category));
         },
         // onLongPress: () {
         //   DialogUtils.showIncDialog(
@@ -129,10 +126,7 @@ class CategoryItem extends ConsumerWidget {
               updateFrom: UpdateFrom.category, txt: listData.title,
               // onDismiss: () {},
               onUpdateCall: (title)  {
-            print("onUpdateCall");
             ref.read(categoryUpdateStateProvider.notifier).update(ref: ref, title: title,categoryId: listData.id);
-            ref.refresh(categoryListController.future);
-            Navigator.pop(context);
           });
         },
         child: Row(

@@ -5,6 +5,7 @@ import 'package:stoke/screens/category/category_screen.dart';
 import 'package:stoke/screens/product/product_controller.dart';
 import '../../dto/category/category_list_dto.dart';
 import '../../utils/dialog.dart';
+import '../add/add_screen.dart';
 
 class ProductScreen extends ConsumerWidget {
   const ProductScreen({Key? key,required this.categoryListData}) : super(key: key);
@@ -15,9 +16,7 @@ class ProductScreen extends ConsumerWidget {
   Widget build(BuildContext context,WidgetRef ref) {
 
     print(categoryListData.title);
-    const categoryList = ["fwefwef","fwefwef","ergergerg","ergerg"];
     final productListProd = ref.watch(productListController(categoryListData.id));
-    final productUpdateProd = ref.watch(productUpdateController);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -45,28 +44,35 @@ class ProductScreen extends ConsumerWidget {
       body: Column(
         mainAxisSize: MainAxisSize.max,
         children: [
+          Consumer(builder: (_, ref, child) {
+            final ProductUpdateState addState = ref.watch(productUpdateStateProvider);
+            print("Update Consumer Called");
+            if(addState is ProductUpdateLoaded){
+              print("Update Loaded State = ${addState.updateData.toString()}");
+              ref.refresh(productListController(categoryListData.id));
+              Navigator.pop(context);
+            }else if(addState is ProductUpdateError){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(addState.errorData.message)));
+              print("Update Error State = ${addState.errorData.toString()}");
+            }
+            return Container();
+          },),
           Flexible(
             child:
-            // ListView.builder(
-            //   // clipBehavior: Clip.antiAlias,
-            //   padding: const EdgeInsets.only(top: 5, bottom: 70),
-            //   itemCount: categoryList.length,
-            //   shrinkWrap: true,
-            //   itemBuilder: (BuildContext ctx, int index) {
-            //     return ProductItem(listData: categoryList[index]);
-            //   },
-            // )
             productListProd.map(
                 data: (data) {
-                  if(data.value!.isNotEmpty){
-                    return ListView.builder(
-                      // clipBehavior: Clip.antiAlias,
-                      padding: const EdgeInsets.only(top: 5, bottom: 70),
-                      itemCount: data.value?.length,
-                      shrinkWrap: true,
-                      itemBuilder: (BuildContext ctx, int index) {
-                        return ProductItem(listData: data.value![index]);
-                      },
+                  if(data.value.isNotEmpty){
+                    return RefreshIndicator(
+                      onRefresh: () async => await ref.refresh(productListController(categoryListData.id)),
+                      child: ListView.builder(
+                        // clipBehavior: Clip.antiAlias,
+                        padding: const EdgeInsets.only(top: 5, bottom: 70),
+                        itemCount: data.value.length,
+                        shrinkWrap: true,
+                        itemBuilder: (BuildContext ctx, int index) {
+                          return ProductItem(listData: data.value[index]);
+                        },
+                      ),
                     );
                   }else {
                    return const Center(child: Text("Products not found"));
@@ -82,7 +88,7 @@ class ProductScreen extends ConsumerWidget {
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          Navigator.pushNamed(context, "/add", arguments: 'Add Product');
+          Navigator.pushNamed(context, "/add", arguments: AddScreenArg(from: AddScreenFrom.product,categoryId: categoryListData.id));
         },
         style: ElevatedButton.styleFrom(
             shape: const CircleBorder(), padding: const EdgeInsets.all(16)),
@@ -95,13 +101,13 @@ class ProductScreen extends ConsumerWidget {
   }
 }
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends ConsumerWidget {
   const ProductItem({Key? key, required this.listData}) : super(key: key);
   final ProductListData listData;
   // final String listData;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -114,7 +120,10 @@ class ProductItem extends StatelessWidget {
               updateFrom: UpdateFrom.product,
               txt : listData.title,
               // onDismiss: () {},
-              onUpdateCall: (title) {});
+              onUpdateCall: (title) {
+                print("onUpdateCall");
+                ref.read(productUpdateStateProvider.notifier).update(ref: ref, title: title,productId: listData.id);
+              });
         },
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -145,4 +154,20 @@ class ProductItem extends StatelessWidget {
       ),
     );
   }
+  // void handleAdd(){
+  //   Consumer(builder: (context, ref, child) {
+  //     final ProductUpdateState addState = ref.watch(productUpdateStateProvider);
+  //     print("handleAddCalled");
+  //     if(addState is ProductUpdateLoading){
+  //       // print("Add Loading = ${addState.updateData.toString()}");
+  //       return Container();
+  //     }else if(addState is ProductUpdateLoaded){
+  //       print("Add Loaded = ${addState.updateData.toString()}");
+  //       Navigator.pop(context);
+  //     }else if(addState is ProductUpdateError){
+  //       print("Add Error = ${addState.errorData.toString()}");
+  //     }
+  //     return Container();
+  //   },);
+  // }
 }

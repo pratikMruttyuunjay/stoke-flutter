@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stoke/dto/category/category_add.dart';
 import 'package:stoke/dto/category/category_update.dart';
@@ -33,7 +32,7 @@ final categoryUpdateController = FutureProvider.family.autoDispose<CategoryUpdat
   return categoryUpdate;
 });
 
-@immutable
+
 abstract class CategoryUpdateState {}
 class CategoryUpdateInit extends CategoryUpdateState {}
 class CategoryUpdateLoading extends CategoryUpdateState {}
@@ -67,7 +66,10 @@ class CategoryUpdateNotifier extends StateNotifier<CategoryUpdateState> {
     });
 
     CategoryUpdate? categoryUpdate = await repo.updateCategory(credential: categoryUpdateCred);
-    if(categoryUpdate!.data.title.isNotEmpty){
+    if(categoryUpdate.data.title.isNotEmpty){
+      state = CategoryUpdateLoaded(categoryUpdate);
+      ref.refresh(categoryListController);
+    }else {
       state = CategoryUpdateLoaded(categoryUpdate);
     }
 

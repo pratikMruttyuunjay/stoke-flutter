@@ -8,7 +8,7 @@ import 'package:stoke/dto/category/category_list_dto.dart';
 import 'package:stoke/dto/minus_qty.dart';
 import 'package:stoke/screens/batch/batch_repo.dart';
 
-final batchListController = FutureProvider.autoDispose.family<List<BatchListData>?,String>((ref,productId) async {
+final batchListController = FutureProvider.autoDispose.family<List<BatchListData>,String>((ref,productId) async {
   final repo = ref.watch(batchRepoProvider);
 
   final FormData batchListCred = FormData.fromMap({
@@ -17,7 +17,6 @@ final batchListController = FutureProvider.autoDispose.family<List<BatchListData
   });
 
   List<BatchListData>? batchList = await repo.getBatchList(credential: batchListCred);
-  print(batchList?.iterator.toString());
   return batchList;
 });
 
@@ -56,3 +55,52 @@ final batchUpdateController = FutureProvider<BatchUpdateData?>((ref) async {
 
   return batchUpdate?.data;
 });
+
+abstract class BatchUpdateState {}
+class BatchUpdateInit extends BatchUpdateState {}
+class BatchUpdateLoading extends BatchUpdateState {}
+class BatchUpdateLoaded extends BatchUpdateState {
+  final BatchUpdate updateData;
+
+  BatchUpdateLoaded(this.updateData);
+}
+class BatchUpdateError extends BatchUpdateState {
+  final BatchUpdate errorData;
+
+  BatchUpdateError(this.errorData);
+}
+
+final batchUpdateStateProvider =
+StateNotifierProvider.autoDispose<BatchUpdateNotifier, BatchUpdateState>((ref) {
+  return BatchUpdateNotifier();
+});
+
+class BatchUpdateNotifier extends StateNotifier<BatchUpdateState> {
+  BatchUpdateNotifier() : super(BatchUpdateInit());
+
+  // final WidgetRef ref;
+
+  void update({
+        required WidgetRef ref,
+        required String batchId,
+        required String title
+  }) async {
+    state = BatchUpdateLoading();
+    print("title = $title");
+    final repo = ref.read(batchRepoProvider);
+    final FormData productUpdateCred = FormData.fromMap({
+      'action': 'batchUpdate',
+      'batch_id': batchId,
+      'status': '1',
+      'title': title
+    });
+
+    BatchUpdate batchUpdate = await repo.getBatchUpdate(credential: productUpdateCred);
+    print(batchUpdate);
+    if (batchUpdate.data.title.isNotEmpty) {
+      state = BatchUpdateLoaded(batchUpdate);
+    } else {
+      state = BatchUpdateError(batchUpdate);
+    }
+  }
+}

@@ -33,82 +33,82 @@ class BatchRepo extends BatchRepoAbstract {
   final API _dio;
 
   @override
-  Future<BatchAdd?> getBatchAdd({required FormData credential}) async {
+  Future<BatchAdd> getBatchAdd({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = batchAddFromJson(response.data);
         return batchAdd;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 
   @override
-  Future<AddQty?> getBatchAddQty({required FormData credential}) async {
+  Future<AddQty> getBatchAddQty({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = addQtyFromJson(response.data);
         return batchAdd;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 
   @override
-  Future<List<BatchListData>?> getBatchList({required FormData credential}) async {
+  Future<List<BatchListData>> getBatchList({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = batchListFromJson(response.data);
         return batchAdd.data;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 
   @override
-  Future<MinusQty?> getBatchMinusQty({required FormData credential}) async {
+  Future<MinusQty> getBatchMinusQty({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = minusQtyFromJson(response.data);
         return batchAdd;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 
   @override
-  Future<BatchUpdate?> getBatchUpdate({required FormData credential}) async {
+  Future<BatchUpdate> getBatchUpdate({required FormData credential}) async {
     try {
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
         final batchAdd = batchUpdateFromJson(response.data);
         return batchAdd;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      log(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 }

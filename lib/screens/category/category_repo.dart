@@ -25,20 +25,19 @@ class CategoryRepository extends CategoryRepoAbstract {
   final _dio = API();
 
   @override
-  Future<CategoryUpdate?> updateCategory({required FormData credential}) async {
+  Future<CategoryUpdate> updateCategory({required FormData credential}) async {
     try {
       final CategoryUpdate categoryUpdate;
       final response = await _dio.getResponse.post('/', data: credential);
       if (response.statusCode == 200) {
-        // print(response.data.toString());
         categoryUpdate = categoryUpdateFromJson(response.data);
         return categoryUpdate;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 
@@ -48,15 +47,15 @@ class CategoryRepository extends CategoryRepoAbstract {
     List<CategoryListData> categoryList = [];
     try {
       final response = await _dio.getResponse.post('/', data: credential);
-      // log('LoginRepo: ${response.data as String}');
       if (response.statusCode == 200) {
-        // final resp = jsonDecode(response.data);
         categoryList = categoryListFromJson(response.data).data;
+        return categoryList;
+      }else {
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
-      return categoryList;
     } catch (e) {
-      print(e.toString());
-      return [];
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 
@@ -69,11 +68,11 @@ class CategoryRepository extends CategoryRepoAbstract {
         categoryAdd = categoryAddFromJson(response.data);
         return categoryAdd;
       } else {
-        return null;
+        throw Exception('API call failed with status code: ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
-      return null;
+      print('Error occurred while making API call: $e');
+      throw e;
     }
   }
 }

@@ -91,7 +91,7 @@ class DialogUtils {
                       onPressed: () =>
                           {
                             if(textController1.text.isEmpty){
-
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please add valid title")))
                             }else {
                               onUpdateCall(textController1.text.toString())
                             }

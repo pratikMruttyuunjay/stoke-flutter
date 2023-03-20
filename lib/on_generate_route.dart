@@ -25,7 +25,7 @@ class RoutesGenerator {
     final args  = settings.arguments;
     switch (route) {
       case AppRoutes.add: {
-        return MaterialPageRoute(builder: (_)=> AddScreen(argument: args.toString()));
+        return MaterialPageRoute(builder: (_)=> AddScreen(argument: args as AddScreenArg));
       }
       case AppRoutes.category: {
         return MaterialPageRoute(builder: (_)=> const CategoryScreen());

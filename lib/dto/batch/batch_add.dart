@@ -4,6 +4,19 @@
 
 import 'dart:convert';
 
+
+// To parse this JSON data, do
+//
+//     final batchAdd = batchAddFromJson(jsonString);
+
+import 'dart:convert';
+
+// To parse this JSON data, do
+//
+//     final batchAdd = batchAddFromJson(jsonString);
+
+import 'dart:convert';
+
 BatchAdd batchAddFromJson(String str) => BatchAdd.fromJson(json.decode(str));
 
 String batchAddToJson(BatchAdd data) => json.encode(data.toJson());
@@ -35,23 +48,24 @@ class BatchAdd {
 class BatchAddData {
   BatchAddData({
     required this.batchId,
-    required this.batchQty,
     required this.batchTitle,
+    required this.batchQty,
   });
 
-  final String batchId;
-  final String batchQty;
+  final int batchId;
   final String batchTitle;
+  final int batchQty;
 
   factory BatchAddData.fromJson(Map<String, dynamic> json) => BatchAddData(
     batchId: json["batchId"],
-    batchQty: json["batchQty"],
     batchTitle: json["batchTitle"],
+    batchQty: json["batchQty"],
   );
 
   Map<String, dynamic> toJson() => {
     "batchId": batchId,
-    "batchQty": batchQty,
     "batchTitle": batchTitle,
+    "batchQty": batchQty,
   };
 }
+
